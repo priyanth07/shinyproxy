@@ -1,0 +1,135 @@
+FROM openanalytics/r-base
+
+MAINTAINER Priyanth Simon "priyanth07@gmail.com"
+
+# system libraries of general use
+RUN apt-get update && apt-get install -y \
+    sudo \
+    pandoc \
+    pandoc-citeproc \
+    libcurl4-gnutls-dev \
+    libcairo2-dev \
+    libxt-dev \
+    libssl-dev \
+    libssh2-1-dev \
+    libssl1.1 \	
+	libxml2-dev \
+	libproj-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y \
+	unixodbc-dev \
+    #libiodbc2-dev \
+	r-cran-rodbc \
+	libudunits2-dev \
+	libgdal-dev \
+	#r-cran-rcppeigen \
+	#r-cran-lme4 \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# Loading R packages necessary for functioning of Customer App
+RUN R -e "install.packages('devtools', repos='http://cran.rstudio.com/')"
+
+RUN R -e "install.packages('RODBC', repos='http://cran.rstudio.com/')"
+
+#ADD install_packages_or_die.R /
+
+COPY /install_packages_or_die.R .
+
+CMD Rscript install_packages_or_die.R
+
+RUN Rscript install_packages_or_die.R shiny
+RUN Rscript install_packages_or_die.R shinydashboard
+RUN Rscript install_packages_or_die.R shinythemes
+RUN Rscript install_packages_or_die.R dplyr
+
+RUN Rscript install_packages_or_die.R ggplot2  
+RUN Rscript install_packages_or_die.R forcats
+RUN Rscript install_packages_or_die.R lattice
+RUN Rscript install_packages_or_die.R stats
+RUN Rscript install_packages_or_die.R lubridate
+RUN Rscript install_packages_or_die.R zoo
+RUN Rscript install_packages_or_die.R formattable
+RUN Rscript install_packages_or_die.R scales
+
+#RUN Rscript install_packages_or_die.R devtools
+#RUN Rscript install_packages_or_die.R RODBC
+RUN Rscript install_packages_or_die.R DBI
+RUN Rscript install_packages_or_die.R pivottabler
+RUN Rscript install_packages_or_die.R kableExtra
+RUN Rscript install_packages_or_die.R rlang
+RUN Rscript install_packages_or_die.R tidyverse
+RUN Rscript install_packages_or_die.R gt
+RUN Rscript install_packages_or_die.R janitor
+RUN Rscript install_packages_or_die.R paletteer
+
+RUN Rscript install_packages_or_die.R reshape2
+RUN Rscript install_packages_or_die.R ggsci
+RUN Rscript install_packages_or_die.R treemap
+RUN Rscript install_packages_or_die.R latticeExtra
+#RUN Rscript install_packages_or_die.R tigerstats
+RUN Rscript install_packages_or_die.R ggalt
+RUN Rscript install_packages_or_die.R sunburstR
+RUN Rscript install_packages_or_die.R packcircles
+RUN Rscript install_packages_or_die.R viridis
+RUN Rscript install_packages_or_die.R ggiraph
+RUN Rscript install_packages_or_die.R ggstatsplot
+RUN Rscript install_packages_or_die.R RColorBrewer
+RUN Rscript install_packages_or_die.R cowplot
+RUN Rscript install_packages_or_die.R colorspace
+RUN Rscript install_packages_or_die.R ggrepel
+RUN Rscript install_packages_or_die.R ggridges
+
+RUN Rscript install_packages_or_die.R heatmaply
+RUN Rscript install_packages_or_die.R ggExtra
+RUN Rscript install_packages_or_die.R wordcloud2
+RUN Rscript install_packages_or_die.R data.tree
+RUN Rscript install_packages_or_die.R ggraph
+RUN Rscript install_packages_or_die.R igraph
+
+RUN Rscript install_packages_or_die.R geofacet
+RUN Rscript install_packages_or_die.R leaflet
+RUN Rscript install_packages_or_die.R rgdal
+RUN Rscript install_packages_or_die.R networkD3
+RUN Rscript install_packages_or_die.R DT
+RUN Rscript install_packages_or_die.R ggnewscale
+RUN Rscript install_packages_or_die.R reshape2
+
+RUN Rscript install_packages_or_die.R data.table
+#RUN Rscript install_packages_or_die.R guf
+RUN Rscript install_packages_or_die.R gridExtra
+RUN Rscript install_packages_or_die.R googleVis
+RUN Rscript install_packages_or_die.R remotes
+RUN Rscript install_packages_or_die.R stringr
+
+RUN Rscript install_packages_or_die.R prismatic
+RUN Rscript install_packages_or_die.R ggallin
+RUN Rscript install_packages_or_die.R rsconnect
+#RUN Rscript install_packages_or_die.R genderizeR
+#RUN Rscript install_packages_or_die.R openNLP
+#RUN Rscript install_packages_or_die.R NLP
+#RUN Rscript install_packages_or_die.R rJava
+RUN Rscript install_packages_or_die.R writexl
+RUN Rscript install_packages_or_die.R leaflet.minicharts
+RUN Rscript install_packages_or_die.R grid
+
+RUN Rscript install_packages_or_die.R github hrbrmstr/hrbrthemes
+RUN Rscript install_packages_or_die.R github jeromefroe/circlepackeR
+RUN Rscript install_packages_or_die.R github teunbrand/ggh4x
+RUN Rscript install_packages_or_die.R github hrbrmstr/streamgraph
+RUN Rscript install_packages_or_die.R github jthomasmock/espnscrapeR
+RUN Rscript install_packages_or_die.R github davidsjoberg/ggsankey
+RUN Rscript install_packages_or_die.R github kalimu/genderizeR
+
+
+
+# copy the app to the image
+RUN mkdir /root/customer_app
+COPY customer_app /root/customer_app
+
+COPY Rprofile.site /usr/lib/R/etc/
+
+EXPOSE 3838
+
+CMD ["R", "-e", "shiny::runApp('/root/customer_app')"]
